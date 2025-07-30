@@ -6,10 +6,18 @@ import "./config/passport.js";
 
 const app = express();
 
+const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [];
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS: ' + origin));
+        }
+    },
     credentials: true
-}))
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
